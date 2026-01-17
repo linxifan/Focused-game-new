@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Discipline Farm</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-links">
+            <button onclick="ui.show('focus')" class="active" id="btn-focus">⏱️ Focus</button>
+            <button onclick="ui.show('farm')" id="btn-farm">🌾 Farm</button>
+            <button onclick="ui.show('barn')" id="btn-barn">🐮 Barn</button>
+            <button onclick="ui.show('stats')" id="btn-stats">📊 Stats</button>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <div class="currency-pill">💰 <span id="coins">0</span></div>
+            <button class="btn btn-sell" onclick="game.sellAll()">Sell</button>
+            <button class="btn" onclick="game.logout()">Exit</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Focus View -->
+        <div id="view-focus" class="view active">
+            <div class="panel">
+                <h2>🎓 Focus Mode</h2>
+                <div class="timer-display" id="timer">25:00</div>
+                <button class="btn btn-start" onclick="timer.start()">Start</button>
+                <button class="btn btn-stop" onclick="timer.stop()">Stop</button>
+                <button class="btn" onclick="timer.reset()">Reset</button>
+                <p style="margin-top:10px; color:#666;">Reward: 50 Coins</p>
+            </div>
+        </div>
+
+        <!-- Farm View -->
+        <div id="view-farm" class="view">
+            <div class="panel">
+                <h2>Plots</h2>
+                <div class="farm-grid" id="plots"></div>
+            </div>
+            <div class="panel">
+                <h3>Seed Shop</h3>
+                <div class="shop-grid" id="seed-shop"></div>
+            </div>
+        </div>
+
+        <!-- Barn View -->
+        <div id="view-barn" class="view">
+            <div class="panel">
+                <h2>Animals</h2>
+                <div class="animal-list" id="animals"></div>
+            </div>
+            <div class="panel">
+                <h3>Animal Shop</h3>
+                <div class="shop-grid" id="animal-shop"></div>
+            </div>
+        </div>
+
+        <!-- Stats View -->
+        <div id="view-stats" class="view">
+            <div class="panel">
+                <h2>Your Progress</h2>
+                <div style="font-size:1.5rem; margin-bottom:10px;">Study Sessions: <span id="stat-sessions" style="color:var(--primary)">0</span></div>
+                <div style="font-size:1.5rem;">Harvests: <span id="stat-harvests" style="color:var(--primary)">0</span></div>
+                <h3 style="margin-top:20px;">Inventory</h3>
+                <div id="inventory-list" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Load Game Logic -->
+    <script src="{{ url_for('static', filename='game.js') }}"></script>
+</body>
+</html>

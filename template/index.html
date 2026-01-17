@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Discipline Farm - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-box">
+            <h1>🌱 Discipline Farm</h1>
+            <p>Turn your study time into crops!</p>
+            
+            <div id="auth-forms">
+                <!-- Login Form -->
+                <form id="login-form">
+                    <input type="text" id="login-user" placeholder="Username" required>
+                    <input type="password" id="login-pass" placeholder="Password" required>
+                    <button type="submit" class="full-btn">Log In</button>
+                </form>
+
+                <button class="link-btn" onclick="toggleMode()">New here? Create Account</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isLogin = true;
+
+        function toggleMode() {
+            isLogin = !isLogin;
+            const container = document.getElementById('auth-forms');
+            
+            if (isLogin) {
+                container.innerHTML = `
+                    <form id="login-form">
+                        <input type="text" id="login-user" placeholder="Username" required>
+                        <input type="password" id="login-pass" placeholder="Password" required>
+                        <button type="submit" class="full-btn">Log In</button>
+                    </form>
+                    <button class="link-btn" onclick="toggleMode()">New here? Create Account</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <form id="signup-form">
+                        <input type="text" id="signup-user" placeholder="Choose Username" required>
+                        <input type="password" id="signup-pass" placeholder="Choose Password" required>
+                        <button type="submit" class="full-btn">Sign Up</button>
+                    </form>
+                    <button class="link-btn" onclick="toggleMode()">Already have an account? Log In</button>
+                `;
+            }
+            attachListeners();
+        }
+
+        function attachListeners() {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+
+            if(loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const u = document.getElementById('login-user').value;
+                    const p = document.getElementById('login-pass').value;
+                    
+                    const res = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({username: u, password: p})
+                    });
+                    const data = await res.json();
+                    
+                    if(data.success) {
+                        sessionStorage.setItem('username', u);
+                        window.location.href = '/game';
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            }
+
+            if(signupForm) {
+                signupForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const u = document.getElementById('signup-user').value;
+                    const p = document.getElementById('signup-pass').value;
+                    
+                    const res = await fetch('/api/signup', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({username: u, password: p})
+                    });
+                    const data = await res.json();
+                    
+                    if(data.success) {
+                        alert("Account created! Please log in.");
+                        toggleMode();
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            }
+        }
+
+        // Initialize listeners
+        attachListeners();
+    </script>
+</body>
+</html>
