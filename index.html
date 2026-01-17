@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discipline Farm - Modular Edition</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="nav-left">
+            <div class="brand">🌱 FarmDiscipline</div>
+        </div>
+
+        <div class="nav-links">
+            <button class="nav-btn active" data-view="focus" aria-label="Focus Timer View">⏱️ Focus</button>
+            <button class="nav-btn" data-view="plots" aria-label="Plots and Seeds View">🌾 Plots</button>
+            <button class="nav-btn" data-view="barn" aria-label="Barn and Animals View">🐮 Barn</button>
+            <button class="nav-btn" data-view="dashboard" aria-label="Dashboard and Stats View">📊 Stats</button>
+        </div>
+
+        <div class="nav-right">
+            <div class="currency-pill" aria-label="Current Coins">💰 <span id="header-coins">0</span></div>
+            <button class="sell-btn" id="sell-btn" aria-label="Sell All Inventory">Sell All</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- PAGE 1: FOCUS TIMER -->
+        <section id="view-focus" class="view-section active" aria-labelledby="focus-title">
+            <div class="panel">
+                <h2 id="focus-title">🎓 Focus Mode</h2>
+                <p>Stay focused to earn coins for your farm!</p>
+                <div class="timer-display" id="timer-display" aria-live="polite" aria-label="Timer Display">25:00</div>
+                <div class="timer-controls">
+                    <button class="btn-start" id="btn-start" aria-label="Start Focus Timer">Start Focus</button>
+                    <button class="btn-stop" id="btn-stop" aria-label="Pause Focus Timer">Pause</button>
+                    <button class="btn-reset" id="btn-reset" aria-label="Reset Focus Timer">Reset</button>
+                </div>
+                <div style="margin-top: 1.5rem; color: #666; font-size: 0.9rem;">
+                    Reward: <span style="font-weight:bold; color:var(--primary)">50 Coins</span> per session.
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 2: PLOTS & SEED SHOP -->
+        <section id="view-plots" class="view-section" aria-labelledby="plots-title">
+            <div class="panel">
+                <h2 id="plots-title">Your Crops</h2>
+                <div class="farm-grid" id="farm-grid" role="grid" aria-label="Farm Plots Grid">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+
+            <div class="panel shop-section">
+                <h2>🌱 Seed Market</h2>
+                <p style="margin-bottom:1rem; color:#666;">Buy seeds to plant in your empty plots.</p>
+                <div class="shop-grid" id="seed-shop" role="list" aria-label="Seed Shop">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: BARN & ANIMAL SHOP -->
+        <section id="view-barn" class="view-section" aria-labelledby="barn-title">
+            <div class="panel">
+                <h2 id="barn-title">Animal Barn</h2>
+                <div class="animal-list" id="animal-list" role="list" aria-label="Animal List">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+
+            <div class="panel shop-section">
+                <h2>🐄 Animal Market</h2>
+                <p style="margin-bottom:1rem; color:#666;">Animals produce resources automatically.</p>
+                <div class="shop-grid" id="animal-shop" role="list" aria-label="Animal Shop">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: DASHBOARD & LOGS -->
+        <section id="view-dashboard" class="view-section" aria-labelledby="dashboard-title">
+            <div class="panel">
+                <h2 id="dashboard-title">📊 Performance Stats</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-val" id="stat-planted" aria-label="Crops Planted">0</div>
+                        <div class="stat-lbl">Crops Planted</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="stat-harvested" aria-label="Harvests">0</div>
+                        <div class="stat-lbl">Harvests</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="stat-sessions" aria-label="Study Sessions">0</div>
+                        <div class="stat-lbl">Study Sessions</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="stat-time" aria-label="Total Study Time">0m</div>
+                        <div class="stat-lbl">Total Study Time</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2>Activity Log</h2>
+                    <button id="clear-logs" class="clear-btn" aria-label="Clear Activity Log">Clear</button>
+                </div>
+                <div class="log-box" id="log-box" role="log" aria-live="polite" aria-label="Activity Log">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>📦 Inventory</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;" id="inventory-display" role="list" aria-label="Inventory List">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+
+            <div class="panel export-import">
+                <button id="export-btn" class="export-btn" aria-label="Export Game Data">Export Data</button>
+                <label for="import-input" class="import-btn" aria-label="Import Game Data">Import Data</label>
+                <input type="file" id="import-input" accept=".json" style="display:none;">
+            </div>
+        </section>
+    </main>
+
+    <!-- PLANTING MODAL -->
+    <div class="modal-overlay" id="plant-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal">
+            <h3 id="modal-title">Choose Seed</h3>
+            <div id="modal-seed-list" style="display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0;"></div>
+            <button id="modal-close" class="btn-stop" style="padding: 0.5rem 1.5rem; border-radius: 4px; border:none; cursor:pointer;" aria-label="Cancel Planting">Cancel</button>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

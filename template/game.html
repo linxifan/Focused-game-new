@@ -2,76 +2,329 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Discipline Farm</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discipline Farm - Modular Edition</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
 
-    <!-- Navigation -->
+    <!-- Weather Effects Container -->
+    <div id="weather-layer"></div>
+
+    <!-- Weather Info Badge -->
+    <div class="weather-info" id="weather-badge">
+        <span id="weather-icon">☀️</span>
+        <span id="weather-text">Loading...</span>
+    </div>
+
+    <!-- NAVIGATION -->
     <nav>
-        <div class="nav-links">
-            <button onclick="ui.show('focus')" class="active" id="btn-focus">⏱️ Focus</button>
-            <button onclick="ui.show('farm')" id="btn-farm">🌾 Farm</button>
-            <button onclick="ui.show('barn')" id="btn-barn">🐮 Barn</button>
-            <button onclick="ui.show('stats')" id="btn-stats">📊 Stats</button>
+        <div class="nav-left">
+            <div class="brand">🌱 FarmDiscipline</div>
         </div>
-        <div style="display:flex; gap:10px; align-items:center;">
-            <div class="currency-pill">💰 <span id="coins">0</span></div>
-            <button class="btn btn-sell" onclick="game.sellAll()">Sell</button>
-            <button class="btn" onclick="game.logout()">Exit</button>
+
+        <div class="nav-links">
+            <button class="nav-btn active" data-view="focus" aria-label="Focus Timer View">⏱️ Focus</button>
+            <button class="nav-btn" data-view="plots" aria-label="Plots and Seeds View">🌾 Plots</button>
+            <button class="nav-btn" data-view="barn" aria-label="Barn and Animals View">🐮 Barn</button>
+            <button class="nav-btn" data-view="dashboard" aria-label="Dashboard and Stats View">📊 Stats</button>
+        </div>
+
+        <div class="nav-right">
+            <div class="currency-pill" aria-label="Current Coins">💰 <span id="header-coins">0</span></div>
+            <button class="sell-btn" id="sell-btn" aria-label="Sell All Inventory">Sell All</button>
+            <button class="logout-icon-btn" id="nav-logout-btn" aria-label="Logout" title="Logout">🚪</button>
         </div>
     </nav>
 
     <main>
-        <!-- Focus View -->
-        <div id="view-focus" class="view active">
+        <!-- PAGE 1: FOCUS TIMER -->
+        <section id="view-focus" class="view-section active" aria-labelledby="focus-title">
             <div class="panel">
-                <h2>🎓 Focus Mode</h2>
-                <div class="timer-display" id="timer">25:00</div>
-                <button class="btn btn-start" onclick="timer.start()">Start</button>
-                <button class="btn btn-stop" onclick="timer.stop()">Stop</button>
-                <button class="btn" onclick="timer.reset()">Reset</button>
-                <p style="margin-top:10px; color:#666;">Reward: 50 Coins</p>
+                <h2 id="focus-title">🎓 Focus Mode</h2>
+                <p>Stay focused to earn coins for your farm!</p>
+                <div id="current-task-display" style="margin: 1rem 0; padding: 0.8rem; background: rgba(168, 200, 232, 0.1); border-radius: 8px; display: none;">
+                    <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.3rem;">Current Task:</div>
+                    <div id="current-task-name" style="font-weight: bold; font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 0.3rem;"></div>
+                    <div id="current-task-duration" style="font-size: 0.9rem; color: #666;"></div>
+                </div>
+                <div class="timer-display" id="timer-display" aria-live="polite" aria-label="Timer Display">25:00</div>
+                <div class="timer-controls">
+                    <button class="btn-start" id="btn-start" aria-label="Start Focus Timer">Start Focus</button>
+                    <button class="btn-stop" id="btn-stop" aria-label="Pause Focus Timer">Pause</button>
+                    <button class="btn-reset" id="btn-reset" aria-label="Reset Focus Timer">Reset</button>
+                </div>
+                <div style="margin-top: 1.5rem; color: #666; font-size: 0.9rem;">
+                    Reward: <span style="font-weight:bold; color:var(--primary)">1 Coin per minute</span>. 
+                    <span style="font-weight:bold; color:var(--accent)">+20 Coins bonus</span> if you complete your task!
+                </div>
             </div>
-        </div>
 
-        <!-- Farm View -->
-        <div id="view-farm" class="view">
+            <!-- Task Management Panel -->
             <div class="panel">
-                <h2>Plots</h2>
-                <div class="farm-grid" id="plots"></div>
+                <h2>📝 My Tasks</h2>
+                <div class="task-form">
+                    <input type="text" id="task-name-input" placeholder="Task name" style="flex: 1; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                    <input type="date" id="task-date-input" min="" style="padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                    <input type="number" id="task-duration-input" placeholder="Minutes (min 20)" min="20" style="width: 120px; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                    <button class="btn-start" id="btn-add-task" style="padding: 0.8rem 1.5rem;">Add Task</button>
+                </div>
+                
+                <!-- Task Filter Tabs -->
+                <div class="task-filter-tabs" style="display: flex; gap: 0.5rem; margin-top: 1.5rem; border-bottom: 2px solid #e0e0e0;">
+                    <button class="task-filter-btn active" data-filter="active" style="flex: 1; padding: 0.8rem; border: none; background: none; cursor: pointer; font-weight: bold; color: var(--primary-dark); border-bottom: 3px solid var(--primary);">
+                        Active Tasks
+                    </button>
+                    <button class="task-filter-btn" data-filter="finished" style="flex: 1; padding: 0.8rem; border: none; background: none; cursor: pointer; font-weight: bold; color: #666; border-bottom: 3px solid transparent;">
+                        Finished Tasks
+                    </button>
+                </div>
+                
+                <div id="task-list" style="margin-top: 1.5rem; text-align: left;">
+                    <!-- Tasks will be rendered here -->
+                </div>
             </div>
-            <div class="panel">
-                <h3>Seed Shop</h3>
-                <div class="shop-grid" id="seed-shop"></div>
-            </div>
-        </div>
+        </section>
 
-        <!-- Barn View -->
-        <div id="view-barn" class="view">
+        <!-- PAGE 2: PLOTS & SEED SHOP -->
+        <section id="view-plots" class="view-section" aria-labelledby="plots-title">
             <div class="panel">
-                <h2>Animals</h2>
-                <div class="animal-list" id="animals"></div>
+                <h2 id="plots-title">Your Crops</h2>
+                <div class="farm-grid" id="farm-grid" role="grid" aria-label="Farm Plots Grid">
+                    <!-- JS Generated -->
+                </div>
             </div>
-            <div class="panel">
-                <h3>Animal Shop</h3>
-                <div class="shop-grid" id="animal-shop"></div>
-            </div>
-        </div>
 
-        <!-- Stats View -->
-        <div id="view-stats" class="view">
-            <div class="panel">
-                <h2>Your Progress</h2>
-                <div style="font-size:1.5rem; margin-bottom:10px;">Study Sessions: <span id="stat-sessions" style="color:var(--primary)">0</span></div>
-                <div style="font-size:1.5rem;">Harvests: <span id="stat-harvests" style="color:var(--primary)">0</span></div>
-                <h3 style="margin-top:20px;">Inventory</h3>
-                <div id="inventory-list" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;"></div>
+            <div class="panel shop-section">
+                <h2>🌱 Seed Market</h2>
+                <p style="margin-bottom:1rem; color:#666;">Buy seeds to plant in your empty plots.</p>
+                <div class="shop-grid" id="seed-shop" role="list" aria-label="Seed Shop">
+                    <!-- JS Generated -->
+                </div>
             </div>
-        </div>
+        </section>
+
+        <!-- PAGE 3: BARN & ANIMAL SHOP -->
+        <section id="view-barn" class="view-section" aria-labelledby="barn-title">
+            <div class="panel">
+                <h2 id="barn-title">Animal Barn</h2>
+                <div class="animal-list" id="animal-list" role="list" aria-label="Animal List">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+
+            <div class="panel shop-section">
+                <h2>🐄 Animal Market</h2>
+                <p style="margin-bottom:1rem; color:#666;">Animals produce resources automatically.</p>
+                <div class="shop-grid" id="animal-shop" role="list" aria-label="Animal Shop">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: DASHBOARD & LOGS -->
+        <section id="view-dashboard" class="view-section" aria-labelledby="dashboard-title">
+            <!-- Profile Header -->
+            <div class="panel profile-header">
+                <div class="profile-avatar" id="profile-avatar" style="cursor: pointer;" title="Click to change avatar">👤</div>
+                <h1 id="profile-username" class="profile-name">{{ username }}</h1>
+                <p class="profile-subtitle">Farmer Profile</p>
+            </div>
+
+            <!-- Avatar Selection Modal -->
+            <div class="modal-overlay" id="avatar-modal" role="dialog" aria-modal="true" aria-labelledby="avatar-modal-title" style="display: none;">
+                <div class="modal" style="max-width: 500px;">
+                    <h3 id="avatar-modal-title">Choose Your Avatar</h3>
+                    <div id="avatar-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1.5rem 0;">
+                        <!-- Avatars will be populated by JS -->
+                    </div>
+                    <button id="avatar-modal-close" class="btn-stop" style="padding: 0.5rem 1.5rem; border-radius: 4px; border:none; cursor:pointer;" aria-label="Close Avatar Selection">Close</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2 id="dashboard-title">📊 Performance Stats</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-val" id="stat-planted" aria-label="Crops Planted">0</div>
+                        <div class="stat-lbl">Crops Planted</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="stat-harvested" aria-label="Harvests">0</div>
+                        <div class="stat-lbl">Harvests</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="stat-sessions" aria-label="Study Sessions">0</div>
+                        <div class="stat-lbl">Study Sessions</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="stat-time" aria-label="Total Study Time">0m</div>
+                        <div class="stat-lbl">Total Study Time</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val" id="stat-tasks" aria-label="Tasks Completed">0</div>
+                        <div class="stat-lbl">Tasks Completed</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2>Activity Log</h2>
+                    <button id="clear-logs" class="clear-btn" aria-label="Clear Activity Log">Clear</button>
+                </div>
+                <div class="log-box" id="log-box" role="log" aria-live="polite" aria-label="Activity Log">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>📦 Inventory</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;" id="inventory-display" role="list" aria-label="Inventory List">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+
+        </section>
     </main>
 
-    <!-- Load Game Logic -->
-    <script src="{{ url_for('static', filename='game.js') }}"></script>
+    <!-- PLANTING MODAL -->
+    <div class="modal-overlay" id="plant-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal">
+            <h3 id="modal-title">Choose Seed</h3>
+            <div id="modal-seed-list" style="display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0;"></div>
+            <button id="modal-close" class="btn-stop" style="padding: 0.5rem 1.5rem; border-radius: 4px; border:none; cursor:pointer;" aria-label="Cancel Planting">Cancel</button>
+        </div>
+    </div>
+
+    <!-- EDIT TASK MODAL -->
+    <div class="modal-overlay" id="edit-task-modal" role="dialog" aria-modal="true" aria-labelledby="edit-task-modal-title" style="display: none;">
+        <div class="modal" style="max-width: 500px;">
+            <h3 id="edit-task-modal-title">Edit Task</h3>
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin: 1.5rem 0;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Task Name:</label>
+                    <input type="text" id="edit-task-name" placeholder="Task name" style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Focus Time (minutes, min 20):</label>
+                    <input type="number" id="edit-task-duration" placeholder="Minutes (min 20)" min="20" style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button id="edit-task-cancel" class="btn-stop" style="padding: 0.5rem 1.5rem; border-radius: 4px; border:none; cursor:pointer;" aria-label="Cancel Editing">Cancel</button>
+                <button id="edit-task-save" class="btn-start" style="padding: 0.5rem 1.5rem; border-radius: 4px; border:none; cursor:pointer;" aria-label="Save Changes">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Pass initial data from server
+        const initialGameData = {{ game_data|tojson }};
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set minimum date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            const dateInput = document.getElementById('task-date-input');
+            if (dateInput) {
+                dateInput.setAttribute('min', tomorrowStr);
+            }
+            
+            const app = new App(initialGameData);
+            app.ui.initEventListeners();
+            window.app = app;
+        });
+    </script>
+    <script>
+        // Weather for game page
+        async function initWeather() {
+            try {
+                const response = await fetch('/api/weather');
+                const data = await response.json();
+                if (data.success) {
+                    setWeather(data.type, data.city);
+                } else {
+                    setWeather('sunny', 'Unknown');
+                }
+            } catch (err) {
+                console.error(err);
+                setWeather('sunny', 'Unknown');
+            }
+        }
+
+        function setWeather(type, city) {
+            const body = document.body;
+            const layer = document.getElementById('weather-layer');
+            const iconSpan = document.getElementById('weather-icon');
+            const textSpan = document.getElementById('weather-text');
+
+            // Reset
+            layer.innerHTML = '';
+            body.className = ''; // clear old weather classes
+
+            let icon = '☀️';
+
+            if (type === 'sunny') {
+                icon = '☀️';
+                const sun = document.createElement('div');
+                sun.className = 'sun';
+                layer.appendChild(sun);
+            } else if (type === 'cloudy') {
+                icon = '☁️';
+                for(let i=0; i<5; i++) createCloud(layer);
+            } else if (type === 'rainy') {
+                icon = '🌧️';
+                for(let i=0; i<100; i++) createRain(layer);
+            } else if (type === 'snowy') {
+                icon = '❄️';
+                for(let i=0; i<50; i++) createSnow(layer);
+            }
+
+            body.classList.add(`weather-${type}`);
+            iconSpan.innerText = icon;
+            textSpan.innerText = `${city} - ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+        }
+
+        function createRain(container) {
+            const drop = document.createElement('div');
+            drop.className = 'rain-drop';
+            drop.style.left = Math.random() * 100 + 'vw';
+            drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+            drop.style.animationDelay = Math.random() * 2 + 's';
+            container.appendChild(drop);
+        }
+
+        function createSnow(container) {
+            const flake = document.createElement('div');
+            flake.className = 'snowflake';
+            flake.innerText = '❄';
+            flake.style.left = Math.random() * 100 + 'vw';
+            flake.style.opacity = Math.random();
+            flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            flake.style.animationDelay = Math.random() * 2 + 's';
+            container.appendChild(flake);
+        }
+
+        function createCloud(container) {
+            const cloud = document.createElement('div');
+            cloud.className = 'cloud';
+            const size = Math.random() * 60 + 40;
+            cloud.style.width = size * 1.5 + 'px';
+            cloud.style.height = size + 'px';
+            cloud.style.top = Math.random() * 40 + '%';
+            cloud.style.animationDuration = (Math.random() * 20 + 20) + 's';
+            cloud.style.opacity = Math.random() * 0.5 + 0.3;
+            container.appendChild(cloud);
+        }
+
+        initWeather();
+    </script>
 </body>
 </html>

@@ -1,166 +1,476 @@
+/* Discipline Farm Styles */
 :root {
-    --primary: #4caf50;
-    --accent: #ff9800;
-    --bg: #f0f4f0;
-    --nav-height: 60px;
+    --primary: #A8C8E8;
+    --primary-dark: #7BA3D1;
+    --accent: #B19CD9;
+    --accent-dark: #9B7FC7;
+    --bg: #F0F4F8;
+    --panel-bg: #ffffff;
+    --text: #333333;
+    --border: #e0e0e0;
+    --nav-height: 70px;
 }
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
 
 body {
     background-color: var(--bg);
-    color: #333;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    overflow: hidden; /* Hide scrollbars for game */
+    color: var(--text);
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
-/* Navigation */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* --- Navigation Bar --- */
 nav {
     height: var(--nav-height);
     background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 1rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    z-index: 10;
+    z-index: 100;
 }
 
-.nav-links button {
-    background: none;
+.nav-left { display: flex; align-items: center; gap: 1rem; }
+.brand { font-weight: bold; font-size: 1.2rem; color: var(--primary-dark); display: none; }
+
+@media (min-width: 600px) { .brand { display: block; } }
+
+.nav-links {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: center;
+}
+
+.nav-btn {
     border: none;
-    padding: 0.8rem 1rem;
+    background: none;
+    padding: 0.8rem 1.2rem;
     font-size: 1rem;
-    cursor: pointer;
     color: #666;
+    cursor: pointer;
     border-bottom: 3px solid transparent;
     transition: all 0.2s;
+    border-radius: 8px 8px 0 0;
 }
 
-.nav-links button.active {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
-    font-weight: bold;
-}
+.nav-btn:hover { background: #f9f9f9; color: var(--primary); }
+.nav-btn.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: bold; }
+.nav-btn:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.nav-right { display: flex; gap: 1rem; align-items: center; }
 
 .currency-pill {
-    background: var(--primary);
+    background: var(--primary-dark);
     color: white;
-    padding: 0.4rem 1rem;
+    padding: 0.5rem 1rem;
     border-radius: 20px;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.btn {
-    padding: 8px 16px;
+.sell-btn {
+    background: var(--accent);
+    color: white;
     border: none;
-    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 0.9rem;
 }
-.btn-start { background: var(--primary); color: white; }
-.btn-stop { background: #ef5350; color: white; }
-.btn-sell { background: var(--accent); color: white; }
+.sell-btn:hover { background: var(--accent-dark); }
+.sell-btn:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-/* Main Layout */
+.logout-icon-btn {
+    background: transparent;
+    border: 2px solid #e0e0e0;
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.logout-icon-btn:hover {
+    background: #f44336;
+    border-color: #f44336;
+    transform: scale(1.1);
+}
+.logout-icon-btn:focus { outline: 2px solid #f44336; outline-offset: 2px; }
+
+/* --- Main View Container --- */
 main {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 1.5rem;
     position: relative;
 }
 
-.view { display: none; max-width: 800px; margin: 0 auto; }
-.view.active { display: block; }
+.view-section {
+    display: none;
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeIn 0.3s ease;
+}
 
-/* Panels */
+.view-section.active { display: flex; flex-direction: column; gap: 1.5rem; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- Common Panel Styles --- */
 .panel {
-    background: white;
-    padding: 1.5rem;
+    background: var(--panel-bg);
     border-radius: 12px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    margin-bottom: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     text-align: center;
 }
 
-/* Game Elements */
-.timer-display { font-size: 3rem; font-weight: bold; color: var(--primary); margin: 1rem 0; }
+h2 { margin-bottom: 1rem; color: var(--primary-dark); }
 
-.farm-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 10px;
+/* --- Profile Header --- */
+.profile-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
 }
 
+.profile-avatar {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-option:active {
+    transform: scale(0.95);
+}
+
+.profile-name {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.profile-subtitle {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-top: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- VIEW 1: Focus --- */
+.timer-display { font-size: 5rem; font-weight: bold; color: var(--text); margin: 1rem 0; font-variant-numeric: tabular-nums; }
+.timer-controls button { padding: 0.8rem 2rem; margin: 0 0.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
+.btn-start { background: var(--primary); color: white; }
+.btn-stop { background: #ef5350; color: white; }
+.btn-reset { background: #bdbdbd; color: white; }
+.timer-controls button:focus { outline: 2px solid currentColor; outline-offset: 2px; }
+
+/* --- Task Management --- */
+.task-form {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.task-form input {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.8rem;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.task-form input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.task-item {
+    transition: all 0.2s;
+}
+
+.task-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.task-filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.task-filter-btn {
+    flex: 1;
+    padding: 0.8rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+    border-bottom: 3px solid transparent;
+}
+
+.task-filter-btn:hover {
+    background: rgba(168, 200, 232, 0.1);
+}
+
+.task-filter-btn.active {
+    color: var(--primary-dark);
+    border-bottom-color: var(--primary);
+}
+
+/* --- VIEW 2: Plots --- */
+.farm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem;
+}
 .plot {
     aspect-ratio: 1;
     background: #8d6e63;
     border-radius: 8px;
+    border: 4px solid #5d4037;
+    position: relative;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
-    border: 2px solid #5d4037;
+    font-size: 3rem;
     transition: transform 0.1s;
 }
 .plot:active { transform: scale(0.95); }
+.plot:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
+.progress-bar { position: absolute; bottom: 0; left: 0; height: 6px; background: #A8C8E8; width: 0%; transition: width 1s linear; }
 
-.shop-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
+/* --- VIEW 3: Barn --- */
+.animal-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+.animal-card {
+    background: #fff8e1; border: 2px solid #ffe0b2; border-radius: 12px; padding: 1.5rem;
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
 }
+.animal-icon { font-size: 3rem; }
 
-.shop-item {
-    border: 1px solid #eee;
-    padding: 10px;
-    border-radius: 8px;
+/* --- VIEW 4: Dashboard --- */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+.stat-box { background: #f5f5f5; padding: 1.5rem; border-radius: 8px; text-align: center; }
+.stat-val { font-size: 1.8rem; font-weight: bold; color: var(--primary-dark); }
+.stat-lbl { font-size: 0.9rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+
+.log-box {
+    background: #fafafa; border: 1px solid #eee; border-radius: 8px;
+    height: 300px; overflow-y: auto; padding: 1rem; text-align: left; font-family: monospace;
+}
+.log-entry { margin-bottom: 0.5rem; border-bottom: 1px dashed #eee; padding-bottom: 0.2rem; }
+.log-time { color: #999; margin-right: 0.5rem; }
+
+.clear-btn {
+    border: none;
+    background: none;
+    color: var(--primary);
     cursor: pointer;
-    background: #fafafa;
+    font-size: 0.9rem;
 }
-.shop-item:hover { background: #e8f5e9; }
+.clear-btn:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
 
-.animal-list {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding: 10px 0;
+/* --- Shop Styles (Shared) --- */
+.shop-section { margin-top: 1rem; text-align: left; }
+.shop-title { font-size: 1.1rem; margin-bottom: 0.5rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.8rem; }
+.shop-item {
+    background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 0.8rem;
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem; cursor: pointer;
+}
+.shop-item:hover { border-color: var(--primary); background: #E8F0F8; }
+.shop-item:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
+.shop-price { font-weight: bold; color: var(--accent-dark); }
+.shop-buy-btn {
+    background: var(--primary); color: white; border: none; padding: 4px 12px; border-radius: 4px; margin-top: 5px; cursor: pointer; width: 100%;
+}
+.shop-buy-btn:disabled { background: #ccc; cursor: not-allowed; }
+.shop-buy-btn:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* --- Modal & Toast --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 200;
+}
+.modal { background: white; padding: 2rem; border-radius: 12px; min-width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+
+.toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 300; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.toast { background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; animation: fadeUp 2s forwards; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- Additional Responsive --- */
+@media (max-width: 768px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .farm-grid { grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); }
+    .timer-display { font-size: 3rem; }
+    .timer-controls button { padding: 0.6rem 1.5rem; font-size: 1rem; }
+    .profile-header { padding: 2rem 1.5rem; }
+    .profile-name { font-size: 2rem; }
+    .profile-avatar { width: 100px; height: 100px; font-size: 4rem; }
+    .task-form { flex-direction: column; }
+    .task-form input, .task-form button { width: 100%; }
 }
 
-.animal {
-    min-width: 100px;
-    background: #fff8e1;
-    border: 1px solid #ffe0b2;
-    padding: 10px;
-    border-radius: 8px;
+@media (max-width: 480px) {
+    nav { padding: 0 0.5rem; }
+    .nav-links { gap: 0.25rem; }
+    .nav-btn { padding: 0.6rem 0.8rem; font-size: 0.9rem; }
+    main { padding: 1rem; }
+    .panel { padding: 1.5rem; }
+    .profile-name { font-size: 1.5rem; }
+    .profile-avatar { width: 80px; height: 80px; font-size: 3rem; }
+    .logout-icon-btn { width: 36px; height: 36px; font-size: 1rem; padding: 0.4rem; }
 }
 
-/* Login Page Styles */
-.login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
+/* --- Loading and Tooltips --- */
+.loading { opacity: 0.6; pointer-events: none; }
+.tooltip {
+    position: relative;
+    display: inline-block;
 }
-.login-box {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    width: 100%;
-    max-width: 400px;
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
     text-align: center;
-}
-input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
     border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
-.full-btn { width: 100%; background: var(--primary); color: white; padding: 10px; border: none; border-radius: 6px; cursor: pointer; }
-.link-btn { background: none; border: none; color: #666; cursor: pointer; margin-top: 10px; }
+.tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
+
+/* --- Export/Import --- */
+.export-import { display: flex; gap: 0.5rem; margin-top: 1rem; justify-content: center; }
+.export-btn, .import-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.export-btn:hover, .import-btn:hover { background: var(--accent-dark); }
+.export-btn:focus, .import-btn:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* --- WEATHER BACKGROUNDS (Dynamic Classes) --- */
+#weather-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* SUNNY */
+body.weather-sunny {
+    background: linear-gradient(to bottom, #2980b9, #6dd5fa, #ffffff);
+}
+.sun {
+    position: absolute; top: 5%; right: 10%; width: 100px; height: 100px;
+    background: #ffeb3b; border-radius: 50%;
+    box-shadow: 0 0 40px #ffeb3b, 0 0 80px #ff9800;
+    animation: pulseSun 4s infinite alternate;
+}
+@keyframes pulseSun { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+/* RAINY */
+body.weather-rainy {
+    background: linear-gradient(to bottom, #203a43, #2c5364);
+}
+.rain-drop {
+    position: absolute; background: rgba(255,255,255,0.4);
+    width: 2px; height: 15px; top: -20px;
+    animation: fall linear infinite;
+}
+
+/* SNOWY */
+body.weather-snowy {
+    background: linear-gradient(to bottom, #83a4d4, #b6fbff);
+}
+.snowflake {
+    position: absolute; color: white; top: -20px;
+    animation: fall linear infinite; font-size: 1.2rem;
+}
+
+/* CLOUDY */
+body.weather-cloudy {
+    background: linear-gradient(to bottom, #757f9a, #d7dde8);
+}
+.cloud {
+    position: absolute; background: #fff; border-radius: 50px;
+    opacity: 0.8; animation: moveClouds linear infinite;
+}
+.cloud::after, .cloud::before {
+    content:''; position: absolute; background: inherit; border-radius: 50%;
+}
+.cloud::after { width: 50px; height: 50px; top: -25px; left: 25px; }
+.cloud::before { width: 40px; height: 40px; top: -15px; left: 60px; }
+
+@keyframes fall { to { transform: translateY(110vh); } }
+@keyframes moveClouds { from { left: -200px; } to { left: 110vw; } }
+
+/* --- Weather Info Badge --- */
+.weather-info {
+    position: absolute; bottom: 20px; right: 20px;
+    background: rgba(0,0,0,0.6); color: white;
+    padding: 10px 20px; border-radius: 30px; font-size: 0.9rem;
+    z-index: 20; display: flex; align-items: center; gap: 10px;
+}
